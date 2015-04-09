@@ -35,6 +35,17 @@ static struct pollfd ev_fds[MAX_DEVICES];
 static char poll_device_name[MAX_DEVICES][DEVICE_NAME_LENGTH];
 static unsigned ev_count = 0;
 
+static char *input_device_whitelist[] = {"mahimahi-nav", "mahimahi-keypad"};
+int is_device_whitelisted(char input_device[]) {
+    int i;
+    for (i=0; i < sizeof(input_device_whitelist) / sizeof(*input_device_whitelist) ; i++) {
+        if (!strcmp(input_device_whitelist[i], input_device)) {
+            return 0;
+        }
+    }    
+    return -EINVAL;
+}
+
 int ev_init(void)
 {
     DIR *dir;
@@ -60,6 +71,9 @@ int ev_init(void)
             } else {
                 ALOGD("ev_init: input found=%s\n", name);
                 memcpy(poll_device_name[ev_count], name, strlen(name));
+                if (ENABLE_INPUT_WHITELISTING && is_device_whitelisted(name)) {
+                    continue;
+                }
             }
             if(fd < 0) continue;
             ev_fds[ev_count].fd = fd;

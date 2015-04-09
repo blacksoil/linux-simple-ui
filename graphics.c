@@ -31,6 +31,7 @@
 
 #include "font_10x18.h"
 #include "minui.h"
+#include "utils.h"
 
 typedef struct {
     GGLSurface texture;
@@ -119,7 +120,7 @@ static void set_active_framebuffer(unsigned n)
     vi.yoffset = n * vi.yres;
     vi.bits_per_pixel = 16;
     if (ioctl(gr_fb_fd, FBIOPUT_VSCREENINFO, &vi) < 0) {
-        perror("active fb swap failed");
+        ALOGE("active fb swap failed");
     }
 }
 
@@ -255,10 +256,10 @@ int gr_init(void)
     gr_vt_fd = open("/dev/tty0", O_RDWR | O_SYNC);
     if (gr_vt_fd < 0) {
         // This is non-fatal; post-Cupcake kernels don't have tty0.
-        perror("can't open /dev/tty0");
+        ALOGE("can't open /dev/tty0\n");
     } else if (ioctl(gr_vt_fd, KDSETMODE, (void*) KD_GRAPHICS)) {
         // However, if we do open tty0, we expect the ioctl to work.
-        perror("failed KDSETMODE to KD_GRAPHICS on tty0");
+        // perror("failed KDSETMODE to KD_GRAPHICS on tty0");
         gr_exit();
         return -1;
     }
@@ -271,7 +272,7 @@ int gr_init(void)
 
     get_memory_surface(&gr_mem_surface);
 
-    fprintf(stderr, "framebuffer: fd %d (%d x %d)\n",
+    ALOGD("framebuffer: fd %d (%d x %d)\n",
             gr_fb_fd, gr_framebuffer[0].width, gr_framebuffer[0].height);
 
         /* start with 0 as front (displayed) and 1 as back (drawing) */

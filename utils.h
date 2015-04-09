@@ -2,6 +2,7 @@
 #define TAG "blacksoil"
 #define DEBUG 1
 #define PRINT_ON_LOGCAT 0
+#define ENABLE_INPUT_WHITELISTING 1
 
 #define ALOGD(...) \
 do { \
